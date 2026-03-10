@@ -26,4 +26,11 @@ Run "echo "console.log('Hello, Node.js with Typescript!');"> src/index.ts"
 
 ## NB: if you get at encoded error just below vscode change the encoding to Utf-8 ##
 [utf-8/encoding type area at the bottom] >> save with encoding >> choose utf-8
+
+================= DATABASE CONNECTION ====================================
+
+## install the pg(postgresql) and dotenv(.env) packages  and its typescript types ##
+Run "npm i pg dotenv" then "npm i --save-dev @types/pg"
+
+
      
