@@ -35,7 +35,7 @@ export class MaintananceService {
 
     getAllServices=async():Promise<ServiceRecord[]>=>{
      try {
-        const allServices = await query<ServiceRecord>(`SELECT * FROM service_records`);
+        const allServices = await query<ServiceRecord>(`SELECT * FROM service_records ORDER BY created_at DESC`);
 
         if(allServices.length == 0){throw new Error("No records available")}
 
@@ -48,7 +48,7 @@ export class MaintananceService {
 
     getServicesWithId=async(id:number):Promise<ServiceRecord>=>{
      try {
-        if(!id || isNaN(id) ||id <= 0){throw new Error(`invalid or unavailabe id:${id}`)}
+        if(!id || isNaN(id) ||id <= 0){throw new Error(`invalid or unavailable id:${id}`)}
 
         const fetchSerivceId = await query<ServiceRecord>(`SELECT * FROM service_records WHERE id = $1`,[id]);
 
@@ -58,8 +58,58 @@ export class MaintananceService {
 
          return record;
      } catch (error) {
-        console.error("Error fecthing records")
+        console.error("Error fetching records")
          throw error;
      }
+    }
+
+    updateService=async(id:number,updates:Partial<ServiceRecord>):Promise<ServiceRecord>=>{
+        try {
+            if(!id || isNaN(id)){throw new Error("valid is required")};
+            
+            const fields:string[]=[];
+            const values: any[]=[];
+            let paramsIndex = 1;
+
+            if(updates.serviceName !== undefined){
+             fields.push(`service_name=$${paramsIndex}`);
+             values.push(updates.serviceName);
+             paramsIndex ++;
+            }
+
+            if(updates.serviceCost !== undefined){
+              fields.push(`service_cost=$${paramsIndex}`);
+              values.push(updates.serviceCost);
+              paramsIndex++
+            }
+
+            if(updates.serviceDate !== undefined){
+              fields.push(`record_date=$${paramsIndex}`);
+              values.push(updates.serviceDate);
+              paramsIndex++
+            }
+
+            if(fields.length==0){throw new Error("No fields available to update")}
+
+            values.push(id);
+
+            const updatedRecord = await query<ServiceRecord>(
+                `UPDATE service_records
+                SET ${fields.join(",")}
+                WHERE id = $${paramsIndex}
+                RETURNING *
+                `, values
+            )
+
+            const record = updatedRecord[0]
+
+            if(!record){throw new Error("Rcord to update is not available")}
+
+            return record;
+
+        } catch (error) {
+            console.error("Error updating service");
+            throw error;
+        }
     }
 }

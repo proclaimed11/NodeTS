@@ -8,16 +8,16 @@ const servEng = new MaintananceService();
 
 router.post("/new-service",async(req:Request, res:Response)=>{
     try {
-        const {service,cost}:{service:string, cost:number} = req.body;
+        const {serviceName,serviceCost}:{serviceName:string, serviceCost:number} = req.body;
 
-        const addRecord = await servEng.addService(service,cost);
+        const addRecord = await servEng.addService(serviceName,serviceCost);
 
         res.status(201).json({
             message:"service added successfully!",
             addRecord
         })
     } catch (error) {
-    res.json({error:error})
+    res.status(404).json({error:error})
     }
 })
 
@@ -31,7 +31,7 @@ router.get("/services",async(req:Request, res:Response)=>{
             allServices
         })
     } catch (error) {
-    res.json({error:error})
+    res.status(404).json({error:error})
     }
 })
 
@@ -46,8 +46,25 @@ router.get("/services/:id",async(req:Request, res:Response)=>{
             serviceWithId
         })
     } catch (error) {
-    res.json({error:error})
+    res.status(404).json({error:error});
     }
+})
+
+router.put("/service/:id",async(req:Request, res:Response)=>{
+try {
+    const id = Number(req.params.id);
+
+    const updates = req.body;
+
+    const serviceUpdated = await servEng.updateService(id, updates);
+-
+    res.json({
+        message: `record with id:${id} updated successfully!`,
+        serviceUpdated
+    })
+} catch (error) {
+    res.status(404).json({error:error})
+}
 })
 
 export default router;
