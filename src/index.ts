@@ -1,23 +1,24 @@
-import express from "express";
+import express from "express"
 import { config } from "./config/index.js";
-import { dbConnTest } from "./db/conn.js";
-import serviceRouter from "./routes/MainServiceRoutes.js";
+import { dbTestConn } from "./db/conn.js";
+import serviceRouter from "./routers/services.routers.js";
+import { errorHandler } from "./middlewares/errors.middleware.js";
 
 const app = express();
 
 app.use(express.json());
-app.use("/",serviceRouter);
+
+app.use(errorHandler);
+
+app.use("/", serviceRouter);
 
 const PORT = config.port;
 
-const initializeServer=()=>{
-    //testing connection
-    dbConnTest();
-
-   app.listen(PORT,()=>{
-    console.log(`Server is running on port ${PORT}`);
-   }) 
+const initializeServer=async()=>{
+dbTestConn();
+app.listen(PORT,()=>{
+console.log(`Server running on port:${PORT}`)
+})
 }
-
 
 initializeServer();

@@ -1,31 +1,35 @@
-import { Pool } from "pg";
+import {Pool} from "pg";
+import {config} from "../config/index.js";
+import type {Request, Response} from "express"
 
 const pool = new Pool({
-    connectionString: process.env.DB_URL
-})
+  connectionString:config.dbUrl,
+  idleTimeoutMillis:2000,
+  connectionTimeoutMillis:30000,
+  max:20
+});
 
-export const query=async<T=any>(sql:string, params?:any[])=>{
+export const query=async<T=any>(sql:string, params?:any[]):Promise<T[]>=>{
 const client = await pool.connect();
 try {
 const res = await client.query(sql,params);
-return res.rows as T[];  
+return res.rows as T[];
 } catch (error) {
-    console.error(`Error performing operation "${sql}" :`, error)
-    throw error;
-} finally {
-    client.release();
+throw new Error("Error performing operation");
+throw error; 
 }
 }
 
-export const dbConnTest =async()=>{
+export const dbTestConn=async()=>{
 const client = await pool.connect();
 try {
-    const res = await client.query('SELECT NOW() as now');
-    console.log(`Established connection to datababse at : ${res.rows[0].now}`)
+const res = await client.query(`SELECT NOW() as now`);
+console.log(`Database established connection at: ${res.rows[0].now}`);
 } catch (error) {
-    console.error('Error connecting to database :', error);
-} finally {
-    client.release();
+throw new Error(`Error connecting to database : ${error}`);
+}
+}
 
-}
-}
+
+
+
