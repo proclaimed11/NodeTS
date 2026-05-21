@@ -1,5 +1,4 @@
 import type { NextFunction, Request, Response } from "express"
-import { error } from "node:console"
 import { config } from "../config/index.js";
 
 export const errorHandler=(err:any, req:Request, res:Response, next:NextFunction)=>{
@@ -15,7 +14,7 @@ message=err.message
 }else if(err.message.includes("required") || err.message.includes("must be")){
 statusCode = 400;
 message=err.message;
-}else if(err.message.includes("invalid credentials")){
+}else if(err.message.includes("invalid credentials") || err.message.includes("denied")){
 statusCode = 401;
 message=err.message;   
 }

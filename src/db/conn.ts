@@ -2,7 +2,7 @@ import {Pool} from "pg";
 import {config} from "../config/index.js";
 import type {Request, Response} from "express"
 
-const pool = new Pool({
+export const pool = new Pool({
   connectionString:config.dbUrl,
   idleTimeoutMillis:2000,
   connectionTimeoutMillis:30000,
