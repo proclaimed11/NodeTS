@@ -1,9 +1,10 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
+import { RowDescriptionMessage } from "pg-protocol/dist/messages";
 
 dotenv.config();
 
-export const config={
+export const config = {
     port:process.env.PORT,
-    dbUrl:process.env.DATABASE_URL,
-    env:process.env.NODE_ENV
+    env:process.env.ENV,
+    dbUrl:process.env.DATABASE_URL
 }

@@ -1,28 +1,33 @@
-import express from "express"
+import express from "express";
 import { config } from "./config/index.js";
 import { dbTestConn } from "./db/conn.js";
-import serviceRouter from "./routers/services.routers.js";
-import userRouter from "./routers/users.routers.js";
-import { errorHandler } from "./middlewares/errors.middleware.js";
-import { verifyToken } from "./middlewares/auth.middlewares.js";
+import authRouter from "./routes/auth/auth.routes.js";
+import refreshRouter from "./routes/auth/refresh.routes.js";
+import usersRouter from "./routes/users.routes.js";
+import { errorMid } from "./middlewares/error.mid.js";
+import { authMid } from "./middlewares/auth.mid.js";
+
+const app = express()
+
+app.use(express.json())
+
+app.use("/auth", authRouter);
+app.use("/auth/refresh", refreshRouter )
 
 
-const app = express();
+app.use(authMid)
 
-app.use(express.json());
+app.use("/users", usersRouter )
 
-app.use(errorHandler);
-
-app.use("/", userRouter);
-app.use("/", verifyToken, serviceRouter);
+app.use(errorMid);
 
 const PORT = config.port;
 
-const initializeServer=async()=>{
-dbTestConn();
-app.listen(PORT,()=>{
-console.log(`Server running on port:${PORT}`)
-})
+const initializeApp =()=>{
+    dbTestConn();
+    app.listen(PORT, ()=>{
+        console.log(`Server running on port : ${PORT}`)
+    })
 }
 
-initializeServer();
+initializeApp()
